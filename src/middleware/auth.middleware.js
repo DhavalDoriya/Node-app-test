@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { verify } from 'jsonwebtoken';
+import dotenv from "dotenv";
+dotenv.config();
 
 export default (req, res, next) => {
   try {
@@ -7,7 +9,7 @@ export default (req, res, next) => {
     if (req.headers.authorization) {
       const token = req.headers.authorization
       try {
-        const decoded = verify(token, 'servskvlsnjsdhfjkhjkds');
+        const decoded = verify(token, process.env.JWT_SECRET_KEY);
         req.user = decoded;
         next();
       } catch (err) {

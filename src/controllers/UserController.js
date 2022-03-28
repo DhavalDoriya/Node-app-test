@@ -24,12 +24,12 @@ class UserController extends Controller {
     return res.status(response.statusCode).send(response);
   }
 
-  async jwt(req, res) {
-    console.log('req.header.authtoken');
-    const response = await this.service.login(req.headers.authtoken);
-    if (response.error) return res.status(response.statusCode).send(response);
-    return res.status(response.statusCode).send(response);
-  }
+  // async jwt(req, res) {
+  //   console.log('req.header.authtoken');
+  //   const response = await this.service.login(req.headers.authtoken);
+  //   if (response.error) return res.status(response.statusCode).send(response);
+  //   return res.status(response.statusCode).send(response);
+  // }
 
 }
 

@@ -14,8 +14,9 @@ class BlogModel {
                     type: String,
                     default: null,
                 },
-                category: {
-                    type: Array,
+                categoryid: {
+                    type:mongoose.Schema.Types.ObjectId,
+                    ref:'Category',
                     required: true
                 },
                 userid: {

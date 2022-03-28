@@ -3,10 +3,10 @@ import Service from './Service';
 import bcrypt from 'bcrypt';
 import { verify } from 'jsonwebtoken';
 import Category from '../models/CategoryModel';
+import dotenv from "dotenv";
+dotenv.config();
 
 
-
-    
 class BlogService extends Service {
     constructor(model) {
         super(model);
@@ -14,35 +14,32 @@ class BlogService extends Service {
         this.updateblog = this.updateblog.bind(this);
         this.deleteblog = this.deleteblog.bind(this);
         this.getblog = this.getblog.bind(this);
-
+        this.getAllblog = this.getAllblog.bind(this);
     }
-
-    async insertblog(a) {
+    async insertblog(data, userid,category) {
         try {
-            const token = a.Auth
-            const decoded = verify(token, 'servskvlsnjsdhfjkhjkds');
-            if (true) {
-                var data = new this.model({
-                    title: a.body.title,
-                    Description: a.body.Description,
-                    category: a.body.category,
-                    userid: decoded.userID
+           (category.data._id) 
+                var blog = new this.model({
+                    title: data.title,
+                    Description: data.Description,
+                    categoryid: data.categoryid,
+                    userid: userid
                 });
-                await data.save()
+                data = await blog.save()
                 return {
                     error: false,
                     statusCode: 202,
                     data: data,
                 };
-            } else {
+         
                 return {
                     error: true,
-                    statusCode: 404,
-                    message: 'categorty not found',
-                    errors: err,
+                    statusCode: 500,
+                    message: 'category not found',
+                    errors: error,
                 };
-            }
-        } catch (err) {
+        }
+        catch (err) {
             console.log(err)
             return {
                 error: true,
@@ -54,122 +51,130 @@ class BlogService extends Service {
     }
     async updateblog(a) {
         try {
-            const token = a.Auth
-            const decoded = verify(token, 'servskvlsnjsdhfjkhjkds');
-            if (true) {
-                var data = new this.model({
-                    title: a.body.title,
-                    Description: a.body.Description,
-                    category: a.body.category,
-                    userid: decoded.userID
-                });
-                await data.save()
+            let tempuser = await this.model.findOne({ "userid": a.userid })
+            if (tempuser) {
+
+                data = await this.model.findByIdAndUpdate(a.blogid, { $set: a.body }, { new: true })
                 return {
                     error: false,
-                    statusCode: 202,
-                    data: data,
+                    deleted: true,
+                    statusCode: 200,
+                    message: 'blog update successfullly!',
                 };
             } else {
                 return {
                     error: true,
                     statusCode: 404,
-                    message: 'categorty not found',
-                    errors: err,
+                    message: 'blog not found',
                 };
             }
+
         } catch (err) {
             console.log(err)
             return {
                 error: true,
                 statusCode: 500,
-                message: 'Not able to create item',
+                message: 'blog not found',
                 errors: err,
             };
         }
     }
     async deleteblog(a) {
         try {
-            const token = a.Auth
-            const decoded = verify(token, 'servskvlsnjsdhfjkhjkds');
-            if (true) {
-                var data = new this.model({
-                    title: a.body.title,
-                    Description: a.body.Description,
-                    category: a.body.category,
-                    userid: decoded.userID
-                });
-                await data.save()
-                return {
-                    error: false,
-                    statusCode: 202,
-                    data: data,
-                };
-            } else {
-                return {
-                    error: true,
-                    statusCode: 404,
-                    message: 'categorty not found',
-                    errors: err,
-                };
+            let tempuser = await this.model.find({ "userid": a.userid })
+            if (tempuser) {
+                let blogid = await this.model.findByIdAndDelete(a.blogid)
+                if (blogid) {
+                    return {
+                        error: false,
+                        deleted: true,
+                        statusCode: 200,
+                        message: 'blog delete successfullly!',
+                    };
+                } else {
+                    return {
+                        error: true,
+                        statusCode: 404,
+                        message: 'blog not found',
+                    };
+                }
+
             }
         } catch (err) {
             console.log(err)
             return {
                 error: true,
                 statusCode: 500,
-                message: 'Not able to create item',
+                message: 'Error 500',
                 errors: err,
             };
         }
     }
+
     async getblog(a) {
-        try {
-            const token = a.Auth
-            const decoded = verify(token, 'servskvlsnjsdhfjkhjkds');
-            if (true) {
-                var data = new this.model({
-                    title: a.body.title,
-                    Description: a.body.Description,
-                    category: a.body.category,
-                    userid: decoded.userID
-                });
-                await data.save()
+        let tempuser = await this.model.findOne({ "userid": a.userid })
+        if (tempuser) {
+            try {
+                let blogdata = await this.model.findById(a.blogid)
                 return {
                     error: false,
                     statusCode: 202,
-                    data: data,
+                    data: blogdata,
                 };
-            } else {
+            } catch (err) {
+                console.log(err)
                 return {
                     error: true,
-                    statusCode: 404,
-                    message: 'categorty not found',
+                    statusCode: 500,
+                    message: 'Not able to get blog',
                     errors: err,
                 };
             }
+        } else {
+            return {
+                error: true,
+                statusCode: 500,
+                message: 'Not able to get blog'
+
+            }
+
+        }
+    }
+    async getAllblog(a) {
+        try {
+
+            let blogdata = await this.model.find({ "userid": a.userid })
+            return {
+                error: false,
+                statusCode: 202,
+                totalblog: blogdata.length,
+                data: blogdata,
+            };
         } catch (err) {
             console.log(err)
             return {
                 error: true,
                 statusCode: 500,
-                message: 'Not able to create item',
+                message: 'Not able to get blog',
                 errors: err,
             };
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    async getblogbycatid(user, category) {
+        try {
+            let blogs = await this.model.find({ userid: user, categoryid: category })
+            // console.log(checkuser)
+            return {
+                error: false,
+                statusCode: 202,
+                //totaldata: blogdata.length,
+                data: blogs,
+            };
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }
 
 export default BlogService;
