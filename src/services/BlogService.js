@@ -1,8 +1,4 @@
-import { ExportCustomJobPage } from 'twilio/lib/rest/bulkexports/v1/export/exportCustomJob';
 import Service from './Service';
-import bcrypt from 'bcrypt';
-import { verify } from 'jsonwebtoken';
-import Category from '../models/CategoryModel';
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -16,50 +12,42 @@ class BlogService extends Service {
         this.getblog = this.getblog.bind(this);
         this.getAllblog = this.getAllblog.bind(this);
     }
-    async insertblog(data, userid,category) {
+
+    //insert blog by id and userid(jwt)
+    async insertblog(data, userid) {
         try {
-           (category.data._id) 
-                var blog = new this.model({
-                    title: data.title,
-                    Description: data.Description,
-                    categoryid: data.categoryid,
-                    userid: userid
-                });
-                data = await blog.save()
-                return {
-                    error: false,
-                    statusCode: 202,
-                    data: data,
-                };
-         
-                return {
-                    error: true,
-                    statusCode: 500,
-                    message: 'category not found',
-                    errors: error,
-                };
-        }
-        catch (err) {
-            console.log(err)
+            var blog = new this.model({
+                title: data.title,
+                Description: data.Description,
+                categoryid: data.categoryid,
+                userid: userid
+            });
+            data = await blog.save()
+            return {
+                error: false,
+                statusCode: 202,
+                data: data,
+            };
+        } catch (error) {
             return {
                 error: true,
                 statusCode: 500,
-                message: 'Not able to create item',
-                errors: err,
+                message: 'category not found',
             };
         }
     }
-    async updateblog(a) {
+    //update blog by id and userid(jwt)
+    async updateblog(blogid, data, userid) {
         try {
-            let tempuser = await this.model.findOne({ "userid": a.userid })
+            let tempuser = await this.model.findOne({ "userid": userid })
             if (tempuser) {
-
-                data = await this.model.findByIdAndUpdate(a.blogid, { $set: a.body }, { new: true })
+                const updatedBlog = await this.model.updateOne({ _id: blogid },  data );
                 return {
                     error: false,
                     deleted: true,
                     statusCode: 200,
                     message: 'blog update successfullly!',
+                    data: updatedBlog
                 };
             } else {
                 return {
@@ -68,7 +56,6 @@ class BlogService extends Service {
                     message: 'blog not found',
                 };
             }
-
         } catch (err) {
             console.log(err)
             return {
@@ -79,26 +66,26 @@ class BlogService extends Service {
             };
         }
     }
-    async deleteblog(a) {
-        try {
-            let tempuser = await this.model.find({ "userid": a.userid })
-            if (tempuser) {
-                let blogid = await this.model.findByIdAndDelete(a.blogid)
-                if (blogid) {
-                    return {
-                        error: false,
-                        deleted: true,
-                        statusCode: 200,
-                        message: 'blog delete successfullly!',
-                    };
-                } else {
-                    return {
-                        error: true,
-                        statusCode: 404,
-                        message: 'blog not found',
-                    };
-                }
 
+    //delete blog by id and userid(jwt)
+    async deleteblog(blogid, userid) {
+        try {
+            let tempuser = await this.model.find({ "userid": userid })
+            let blog = await this.model.findByIdAndDelete(blogid)
+            if (blog) {
+                return {
+                    error: false,
+                    deleted: true,
+                    statusCode: 200,
+                    message: 'blog delete successfullly!',
+                    data: blog
+                };
+            } else {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: 'blog not found',
+                };
             }
         } catch (err) {
             console.log(err)
@@ -111,11 +98,13 @@ class BlogService extends Service {
         }
     }
 
-    async getblog(a) {
-        let tempuser = await this.model.findOne({ "userid": a.userid })
+    //get all blog of user dhaval blogs
+    async getblog(blogid, userid) {
+        let tempuser = await this.model.findOne({ "userid": userid })
         if (tempuser) {
             try {
-                let blogdata = await this.model.findById(a.blogid)
+                console.log(blogid)
+                let blogdata = await this.model.findById(blogid)
                 return {
                     error: false,
                     statusCode: 202,
@@ -135,15 +124,14 @@ class BlogService extends Service {
                 error: true,
                 statusCode: 500,
                 message: 'Not able to get blog'
-
             }
-
         }
     }
-    async getAllblog(a) {
-        try {
 
-            let blogdata = await this.model.find({ "userid": a.userid })
+    //get all blogs
+    async getAllblog(userid) {
+        try {
+            let blogdata = await this.model.find({ userid: userid })
             return {
                 error: false,
                 statusCode: 202,
@@ -160,19 +148,25 @@ class BlogService extends Service {
             };
         }
     }
-
+    //get all blogs by cat id
     async getblogbycatid(user, category) {
         try {
             let blogs = await this.model.find({ userid: user, categoryid: category })
-            // console.log(checkuser)
             return {
                 error: false,
                 statusCode: 202,
-                //totaldata: blogdata.length,
+                totalblog: blogs.length,
                 data: blogs,
             };
         } catch (error) {
+         
             console.log(error)
+            return {
+                error: true,
+                statusCode: 404,
+                msg : "category not found",
+                data: error,
+            };
         }
     }
 }

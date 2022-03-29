@@ -22,54 +22,42 @@ class BlogController extends Controller {
   }
 
   async insertblog(req, res) {
-  
     var data = req.body
     var userid = req.user.userID
     let category = await categoryService.get(req.body.categoryid)
-    const response = await this.service.insertblog(data, userid ,category );
+    const response = await this.service.insertblog(data, userid, category);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(response.statusCode).send(response);
   }
 
   async updateblog(req, res) {
-    const data = {
-      body: req.body,
-      userid: req.user.userID,
-      blogid: req.params.id
-    }
-    const response = await this.service.updateblog(data);
+    var blogid = req.params.id
+    var data = req.body
+    var userid = req.user.userID
+    const response = await this.service.updateblog(blogid, data, userid);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(response.statusCode).send(response);
   }
 
   async deleteblog(req, res) {
-    const data = {
-      body: req.body,
-      userid: req.user.userID,
-      blogid: req.params.id
-    }
-    const response = await this.service.deleteblog(data);
+    var blogid = req.params.id
+    var userid = req.user.userID
+    const response = await this.service.deleteblog(blogid, userid);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(response.statusCode).send(response);
   }
 
   async getblog(req, res) {
-    const data = {
-      body: req.body,
-      userid: req.user.userID,
-      blogid: req.params.id
-    }
-    const response = await this.service.getblog(data);
+    var blogid = req.params.id
+    var userid = req.user.userID
+    const response = await this.service.getblog(blogid, userid);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(response.statusCode).send(response);
   }
 
   async getAllblog(req, res) {
-    const data = {
-      body: req.body,
-      userid: req.user.userID
-    }
-    const response = await this.service.getAllblog(data);
+    var userid = req.user.userID
+    const response = await this.service.getAllblog( userid);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(response.statusCode).send(response);
   }

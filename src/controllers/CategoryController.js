@@ -8,51 +8,36 @@ class CategoryController extends Controller {
     constructor(service) {
         super(service);
         this.insertcategory = this.insertcategory.bind(this);
-        // this.searchcategoryname = this.searchcategoryname.bind(this);
-
         this.getcategory = this.getcategory.bind(this);
         this.updatecategory = this.updatecategory.bind(this);
         this.deletecategory = this.deletecategory.bind(this);
     }
-
-    async insertcategory(req, res) {
-        const data = {
-            body: req.body,
-            userid: req.user.userID
-        }
-        const response = await this.service.insertcategory(data);
-        if (response.error) return res.status(response.statusCode).send(response);
-        return res.status(response.statusCode).send(response);
-    }
-
     //curd
-    async getcategory(req, res) {
-        const data = {
-            userid: req.user.userID
-        }
-        const response = await this.service.getcategory(data);
+    async insertcategory(req, res) {
+           var Categoryname = req.body.Categoryname
+           var userid = req.user.userID
+        const response = await this.service.insertcategory(Categoryname , userid);
         if (response.error) return res.status(response.statusCode).send(response);
         return res.status(response.statusCode).send(response);
     }
-
+    async getcategory(req, res) {
+        var userid =req.user.userID
+        const response = await this.service.getcategory(userid);
+        if (response.error) return res.status(response.statusCode).send(response);
+        return res.status(response.statusCode).send(response);
+    }
     async updatecategory(req, res) {
-        const data = {
-            body: req.body.Categoryname,
-            id: req.params.id,
-            userid: req.user.userID
-        }
-
-        const response = await this.service.updatecategory(data);
+        let categoryname = req.body.Categoryname
+        let catid = req.params.id
+        let userid = req.user.userID
+        const response = await this.service.updatecategory(categoryname, catid, userid);
         if (response.error) return res.status(response.statusCode).send(response);
         return res.status(response.statusCode).send(response);
     }
     async deletecategory(req, res) {
-        const data = {
-            body: req.body,
-            id: req.params.id,
-            Auth: req.headers.authorization
-        }
-        const response = await this.service.deletecategory(data);
+           var id = req.params.id
+           var userid = req.user.userID
+        const response = await this.service.deletecategory( id ,userid);
         if (response.error) return res.status(response.statusCode).send(response);
         return res.status(response.statusCode).send(response);
     }

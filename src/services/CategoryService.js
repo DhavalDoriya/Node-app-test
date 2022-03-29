@@ -1,7 +1,4 @@
-import { ExportCustomJobPage } from 'twilio/lib/rest/bulkexports/v1/export/exportCustomJob';
 import Service from './Service';
-import bcrypt from 'bcrypt';
-import { verify } from 'jsonwebtoken';
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -16,22 +13,20 @@ class CategoryService extends Service {
         this.deletecategory = this.deletecategory.bind(this);
     }
 
-    async insertcategory(a) {
+    //insert category by id and jwt token 
+    async insertcategory(Categoryname, userid) {
         try {
-            
             var data = new this.model({
-                Categoryname: a.body.Categoryname,
-                userid: a.userid
+                Categoryname: Categoryname,
+                userid: userid
             });
             await data.save()
-            // const data = await this.model.create(a.body);;
             return {
                 error: false,
                 statusCode: 202,
                 data: data,
             };
         } catch (err) {
-            // console.log('errors ssdsds',err);
             return {
                 error: true,
                 statusCode: 500,
@@ -40,13 +35,14 @@ class CategoryService extends Service {
             };
         }
     }
-    async getcategory(a) {
+    //get category by id and jwt token 
+    async getcategory(userid) {
         try {
-            let userdata = await this.model.find({ "userid": a.userid })
+            let userdata = await this.model.find({ userid: userid })
             return {
                 error: false,
                 statusCode: 202,
-                totaldata : userdata.length,
+                totaldata: userdata.length,
                 data: userdata,
             };
         } catch (err) {
@@ -58,35 +54,27 @@ class CategoryService extends Service {
             };
         }
     }
-    async updatecategory(a) {
+
+    //update category by id and jwt token 
+    async updatecategory(categoryname, catid, userid) {
         try {
-          let tempuser = await this.model.findOne({ "userid": a.userID })
-          if (tempuser) {
-                data = await this.model.findByIdAndUpdate(a.id , {$set:a.body} ,{new:true})
-                console.log(data)
-                if (data) {
+            let tempuser = await this.model.find({ userid: userid })
+            if (tempuser) {
+                const updatedCategory = await this.model.updateOne({ _id: catid }, { Categoryname: categoryname });
+                // const updatedCategory = await this.model.findByIdAndUpdate(catid, {$set: categoryname }, { new: true });
                     return {
                         error: false,
                         deleted: true,
                         statusCode: 200,
-                        message: 'record update successfullly!',
-                        data : data
+                        data: updatedCategory
                     };
-                } else {
-                    return {
-                        error: true,
-                        statusCode: 404,
-                        message: 'item not found',
-                    };
-                }
             } else {
                 return {
                     error: true,
                     statusCode: 404,
-                    message: 'item not found',
+                    message: 'category not found',
                 };
             }
-
         } catch (err) {
             console.log(err);
             return {
@@ -97,39 +85,42 @@ class CategoryService extends Service {
             };
         }
     }
-    async deletecategory(a) {
+
+    //delete category by id and jwt token 
+    async deletecategory(id, userid) {
         try {
-            const categortyid = a.id
-            let tempuser = await this.model.findOne({ "userid": a.userID })
+            let tempuser = await this.model.find({ userid: userid })
             if (tempuser) {
-                let catid = await this.model.findByIdAndDelete(categortyid)
+                let catid = await this.model.findByIdAndDelete(id)
                 if (catid) {
                     return {
                         error: false,
                         deleted: true,
                         statusCode: 200,
                         message: 'record delete successfullly!',
-                        tempuser,
+                        data: catid
                     };
                 } else {
                     return {
                         error: true,
                         statusCode: 404,
-                        message: 'item not found',
+                        message: 'user dont have any category ',
                     };
+
                 }
+
             } else {
                 return {
                     error: true,
                     statusCode: 404,
-                    message: 'item not found',
+                    message: 'user dont have any category ',
                 };
             }
         } catch (err) {
             return {
                 error: true,
                 statusCode: 500,
-                message: 'cant find a catogory',
+                message: 'category not found',
                 errors: err,
             };
         }
