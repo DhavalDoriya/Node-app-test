@@ -10,11 +10,11 @@ class CategoryModel {
           type: String,
           default: null,
         },
-        userid: {
-          type:mongoose.Schema.Types.ObjectId,
-          ref:'User',
-          required: true
-        }
+        // userid: {
+        //   type:mongoose.Schema.Types.ObjectId,
+        //   ref:'User',
+        //   required: true
+        // }
       }
     );
     schema.plugin(uniqueValidator);

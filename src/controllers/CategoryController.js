@@ -16,10 +16,13 @@ class CategoryController extends Controller {
     async insertcategory(req, res) {
            var Categoryname = req.body.Categoryname
            var userid = req.user.userID
-        const response = await this.service.insertcategory(Categoryname , userid);
+        const response = await this.service.insertcategory(Categoryname,userid)
         if (response.error) return res.status(response.statusCode).send(response);
         return res.status(response.statusCode).send(response);
     }
+
+
+
     async getcategory(req, res) {
         var userid =req.user.userID
         const response = await this.service.getcategory(userid);

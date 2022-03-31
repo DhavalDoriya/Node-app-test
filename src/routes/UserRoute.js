@@ -6,7 +6,8 @@ export default (router) => {
     router.post(`/api/user/signup`, Controller.signup);
     router.post(`/api/user/login`, Controller.login);
 
-    // router.put(`/api/user/:id`, auth ,Controller.update);
+    router.put(`/api/user/:id`, auth ,Controller.update);
+    
     // router.delete(`/api/user/:id`,auth, Controller.delete);
 
 

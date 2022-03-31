@@ -10,10 +10,19 @@ class BlogModel {
                     type: String,
                     default: null,
                 },
-                Description: {
-                    type: String,
+                price: {
+                    type: Number,
                     default: null,
                 },
+                type: {
+                    type: String,
+                    required: true
+                },
+                // date: {
+                //     type:  Date(),
+                //     default: ISODate(),                    
+                //     required: true
+                // },
                 categoryid: {
                     type:mongoose.Schema.Types.ObjectId,
                     ref:'Category',

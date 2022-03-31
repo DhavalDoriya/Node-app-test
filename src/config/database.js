@@ -3,7 +3,7 @@ require('dotenv').config();
 
 class Connection {
   constructor() {
-    const url = process.env.MONGODB_URI || `mongodb://localhost:27017/myapp`;
+    const url = process.env.MONGODB_URI || `mongodb://localhost:27017/iedata`;
     console.log('Establish new connection with url', url);
     mongoose.Promise = global.Promise;
     // mongoose.set("useNewUrlParser", true);

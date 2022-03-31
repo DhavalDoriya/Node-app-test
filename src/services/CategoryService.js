@@ -12,13 +12,12 @@ class CategoryService extends Service {
         this.updatecategory = this.updatecategory.bind(this);
         this.deletecategory = this.deletecategory.bind(this);
     }
-
     //insert category by id and jwt token 
     async insertcategory(Categoryname, userid) {
         try {
             var data = new this.model({
                 Categoryname: Categoryname,
-                userid: userid
+                // userid: userid
             });
             await data.save()
             return {
@@ -38,11 +37,11 @@ class CategoryService extends Service {
     //get category by id and jwt token 
     async getcategory(userid) {
         try {
-            let userdata = await this.model.find({ userid: userid })
+            let userdata = await this.model.find({ })
             return {
                 error: false,
                 statusCode: 202,
-                totaldata: userdata.length,
+                // totaldata: userdata.length,
                 data: userdata,
             };
         } catch (err) {
@@ -62,12 +61,12 @@ class CategoryService extends Service {
             if (tempuser) {
                 const updatedCategory = await this.model.updateOne({ _id: catid }, { Categoryname: categoryname });
                 // const updatedCategory = await this.model.findByIdAndUpdate(catid, {$set: categoryname }, { new: true });
-                    return {
-                        error: false,
-                        deleted: true,
-                        statusCode: 200,
-                        data: updatedCategory
-                    };
+                return {
+                    error: false,
+                    deleted: true,
+                    statusCode: 200,
+                    data: updatedCategory
+                };
             } else {
                 return {
                     error: true,
@@ -85,7 +84,6 @@ class CategoryService extends Service {
             };
         }
     }
-
     //delete category by id and jwt token 
     async deletecategory(id, userid) {
         try {
@@ -106,9 +104,7 @@ class CategoryService extends Service {
                         statusCode: 404,
                         message: 'user dont have any category ',
                     };
-
                 }
-
             } else {
                 return {
                     error: true,

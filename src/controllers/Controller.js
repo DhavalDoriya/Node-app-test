@@ -39,9 +39,7 @@ class Controller {
 
   async get(req, res) {
     const { id } = req.params;
-
     const response = await this.service.get(id);
-
     return res.status(response.statusCode).send(response);
   }
 }
