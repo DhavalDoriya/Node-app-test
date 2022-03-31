@@ -22,7 +22,7 @@ class IEDataService extends Service {
     }
 
     //insert IEData by id and userid(jwt)
-    async insertIEData(data, userid, category) {    
+    async insertIEData(data, userid, category) {
         try {
 
             console.log(data.date)
@@ -61,11 +61,11 @@ class IEDataService extends Service {
             let days = new Date(2022, month, 0).getDate()
             const start = new Date()
             start.setMonth(month - 1, 1);
-            start.setUTCHours(0,0,0)
+            start.setUTCHours(0, 0, 0)
 
             const end = new Date()
             end.setMonth(month - 1, days);
-            end.setUTCHours(0,0,0)
+            end.setUTCHours(0, 0, 0)
 
 
             // console.log(start);
@@ -82,7 +82,6 @@ class IEDataService extends Service {
                 },
             ]);
 
-
             let arr = [];
             for (let i = 1; i < days + 1; i++) {
                 let test = new Date();
@@ -96,29 +95,19 @@ class IEDataService extends Service {
                 // console.log(obj)
                 arr.push(obj);
                 // console.log(Array)
-
-                
             }
             // console.log(arr)
-
-
-
-            for (let j = 0; j < arr.length; j++) {
-                // const element = arr[j]._id;
-
-                // if (!data._id == arr[j]._id) {
-                //     data.push(arr[j])
-                //     console.log('first')
-                // } else {
-                    
-                // }
-                // console.log(element);
-                
+            // console.log(data.length)
+            for (let n = 0; n < data.length; n++) {
+                for (let j = 0; j < arr.length; j++) {
+                    if (!data[n]._id == arr[j]._id) {
+                        // data.push(arr[j])
+                        console.log('first')
+                    }
+                }
+                console.log('first11')
             }
-            // console.log(data);
-
-
-
+            console.log(data);
             return {
                 error: false,
                 statusCode: 200,

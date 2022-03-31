@@ -9,7 +9,7 @@ const ieDataService = new IEDataService(new IEData().getInstance());
 const categoryService = new CategoryService(new Category().getModel());
 
 
-console.log(categoryService);
+// console.log(categoryService);
 
 class IEDataController extends Controller {
   constructor(service) {
