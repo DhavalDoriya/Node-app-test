@@ -1,5 +1,9 @@
 import Service from './Service';
 import dotenv from "dotenv";
+import moment from 'moment';
+
+
+
 dotenv.config();
 
 
@@ -18,15 +22,21 @@ class IEDataService extends Service {
     }
 
     //insert IEData by id and userid(jwt)
-    async insertIEData(data, userid, category) {
+    async insertIEData(data, userid, category) {    
         try {
+
+            console.log(data.date)
+
+            // console.log( new Date().set("ISO_Date", moment()))
             var IEData = new this.model({
                 title: data.title,
                 price: data.price,
+                date: data.date,
                 type: category.data.Categoryname,
                 categoryid: data.categoryid,
                 userid: userid
             });
+            console.log(data.date)
             data = await IEData.save()
             return {
                 error: false,
@@ -43,24 +53,81 @@ class IEDataService extends Service {
         }
     }
 
+
     async fliter(date) {
         try {
-            // let IEDatadata = await this.model.find({ })
-            let IEDatadata = this.model.aggregate([
-                $group:{
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-                    totalUnitsSold: {
-                        $sum: "$price"
-                    }
+
+            let month = date;
+            let days = new Date(2022, month, 0).getDate()
+            const start = new Date()
+            start.setMonth(month - 1, 1);
+            start.setUTCHours(0,0,0)
+
+            const end = new Date()
+            end.setMonth(month - 1, days);
+            end.setUTCHours(0,0,0)
+
+
+            // console.log(start);
+            // console.log(end);
+            const data = await this.model.aggregate([
+                { $match: { date: { $gte: start, $lt: end } } },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
+                        title: { $first: '$title' },
+                        price: { $first: '$price' },
+                        type: { $first: '$type' },
+                    },
+                },
+            ]);
+
+
+            let arr = [];
+            for (let i = 1; i < days + 1; i++) {
+                let test = new Date();
+                test.setMonth(month - 1, i);
+                // console.log(test);
+                let obj = {
+                    _id: test.toLocaleDateString("fr-CA"),
+                    price: 0,
+                    status: "---"
                 }
-            ])
+                // console.log(obj)
+                arr.push(obj);
+                // console.log(Array)
+
+                
+            }
+            // console.log(arr)
+
+
+
+            for (let j = 0; j < arr.length; j++) {
+                // const element = arr[j]._id;
+
+                // if (!data._id == arr[j]._id) {
+                //     data.push(arr[j])
+                //     console.log('first')
+                // } else {
+                    
+                // }
+                // console.log(element);
+                
+            }
+            // console.log(data);
+
+
+
             return {
                 error: false,
-                statusCode: 202,
-                // totalIEData: IEDatadata.length,
-                data: IEDatadata,
+                statusCode: 200,
+                message: 'Data of month ' + month,
+                data: data,
             };
-        } catch (err) {
+            // const start1 = new Date()
+        }
+        catch (err) {
             console.log(err)
             return {
                 error: true,

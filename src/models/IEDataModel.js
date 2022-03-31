@@ -18,11 +18,11 @@ class BlogModel {
                     type: String,
                     required: true
                 },
-                // date: {
-                //     type:  Date(),
-                //     default: ISODate(),                    
-                //     required: true
-                // },
+                date: {
+                    type:  Date,
+                    // default: ISODate(),                    
+                    // required: true
+                },
                 categoryid: {
                     type:mongoose.Schema.Types.ObjectId,
                     ref:'Category',
