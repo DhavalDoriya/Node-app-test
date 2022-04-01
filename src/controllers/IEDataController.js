@@ -21,24 +21,14 @@ class IEDataController extends Controller {
     this.getAllIEData = this.getAllIEData.bind(this);
     this.getIEDatabycatid = this.getIEDatabycatid.bind(this);
 
-
     this.fliter = this.fliter.bind(this);
-
+    this.searchDate = this.searchDate.bind(this);
   }
-
-
-  
-
-
-
-
 
   async insertIEData(req, res) {
     var data = req.body
     var userid = req.user.userID
     let category = await categoryService.get(req.body.categoryid)
-  
-    
     const response = await this.service.insertIEData(data, userid, category);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(response.statusCode).send(response);
@@ -51,19 +41,24 @@ class IEDataController extends Controller {
     return res.status(response.statusCode).send(response);
   }
 
+  async getIEDatabycatid(req, res) {
+    var user = req.user.userID;
+    var category = req.params.id;
+    const response = await this.service.getIEDatabycatid(user, category);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(response.statusCode).send(response);
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
+  async searchDate(req, res) {
+    var userid = req.user.userID
+    var m = req.params.m
+    var d = req.params.d
+    // var y = req.params.y
+    // let date = `${y}/${m}/${d}`
+    const response = await this.service.searchDate(userid, m, d);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(response.statusCode).send(response);
+  }
 
   async updateIEData(req, res) {
     var IEDataid = req.params.id
@@ -98,13 +93,7 @@ class IEDataController extends Controller {
     return res.status(response.statusCode).send(response);
   }
 
-  async getIEDatabycatid(req, res) {
-    var user = req.user.userID;
-    var category = req.params.id;
-    const response = await this.service.getIEDatabycatid(user, category);
-    if (response.error) return res.status(response.statusCode).send(response);
-    return res.status(response.statusCode).send(response);
-  }
+
 }
 
 
