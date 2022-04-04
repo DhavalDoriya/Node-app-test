@@ -21,7 +21,7 @@ class IEDataController extends Controller {
     this.getAllIEData = this.getAllIEData.bind(this);
     this.getIEDatabycatid = this.getIEDatabycatid.bind(this);
 
-    this.fliter = this.fliter.bind(this);
+    this.montlydata = this.montlydata.bind(this);
     this.searchDate = this.searchDate.bind(this);
     this.fliteryear = this.fliteryear.bind(this);
 
@@ -36,9 +36,9 @@ class IEDataController extends Controller {
     return res.status(response.statusCode).send(response);
   }
 
-  async fliter(req, res) {
+  async montlydata(req, res) {
     var date = req.params.month
-    const response = await this.service.fliter(date);
+    const response = await this.service.montlydata(date);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(response.statusCode).send(response);
   }

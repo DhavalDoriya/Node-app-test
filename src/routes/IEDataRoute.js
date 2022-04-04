@@ -7,7 +7,7 @@ export default (router) => {
 
     router.get(`/api/IEData`,auth, Controller.getAllIEData);
 
-    router.get(`/api/IEData/:month`,auth, Controller.fliter);
+    router.get(`/api/IEData/:month`,auth, Controller.montlydata);
 
 
     router.get(`/api/IEData/year/:year`,auth, Controller.fliteryear);
