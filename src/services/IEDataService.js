@@ -16,6 +16,10 @@ class IEDataService extends Service {
         this.getIEData = this.getIEData.bind(this);
         this.getAllIEData = this.getAllIEData.bind(this);
         this.fliter = this.fliter.bind(this);
+
+        this.fliteryear = this.fliteryear.bind(this);
+
+
     }
 
     //insert IEData by id and userid(jwt)
@@ -47,6 +51,82 @@ class IEDataService extends Service {
         }
     }
 
+    async fliteryear(date) {
+        try {
+
+            let year = date;
+            let final = [];
+            for (let i = 1; i <= 12; i++) {
+                let days = new Date(year, i, 0).getDate()
+                const start = new Date()
+                start.setMonth(i - 1, 1);
+                start.setUTCHours(0, 0, 0)
+                start.setUTCFullYear(year)
+
+                const end = new Date()
+                end.setMonth(i - 1, days);
+                end.setUTCHours(0, 0, 0)
+                end.setUTCFullYear(year)
+
+                const data = await this.model.aggregate([
+                    { $match: { date: { $gte: start, $lt: end } } },
+                    {
+                        $group: {
+                            _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
+                            TransactionTotal: { $sum: 1 },
+                        },
+                    },
+                ]);
+                final.push(...data);
+            }
+            console.log(final)
+
+            if (final.length == 0) {
+                return {
+                    error: false,
+                    statusCode: 200,
+                    msg: `Data Not Found Of year ${year}`
+
+                };
+            } else {
+                return {
+                    error: false,
+                    statusCode: 200,
+                    final,
+                };
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                error: true,
+                statusCode: 500,
+                message: 'Not able to get IEData',
+            };
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     async fliter(date) {
         try {
@@ -70,9 +150,12 @@ class IEDataService extends Service {
                         title: { $first: '$title' },
                         price: { $first: '$price' },
                         type: { $first: '$type' },
+                        total: { $sum: 1 }
                     },
                 },
             ]);
+
+            //generate empty data
             let abc = [];
             for (let i = 1; i < days + 1; i++) {
                 let test = new Date();
@@ -85,6 +168,7 @@ class IEDataService extends Service {
                 }
                 abc.push(obj);
             }
+
 
 
 
@@ -111,11 +195,11 @@ class IEDataService extends Service {
                 if (arrDays.indexOf(strDate) > -1) {
                     var index = arrDays.indexOf(strDate);
                     var dayPrice = arrPrice[index]
-                    abc[index].price= dayPrice
+                    abc[index].price = dayPrice
                     console.log(dayPrice)
                 } else {
                     // dayWiseData.push(0);
-                    abc[index].price= 0
+                    abc[index].price = 0
                     // console.log(abc[index].price = 0)
                 }
 
@@ -137,7 +221,7 @@ class IEDataService extends Service {
 
             // console.log(dayWiseData[0]);
 
-        
+
             // console.log(obj._id)
             // for (let n = 0; n < days; n++) {
             //     // console.log(data[n]._id)
@@ -183,32 +267,31 @@ class IEDataService extends Service {
 
 
     async searchDate(userid, m, d) {
-        try{
+        try {
             // if(m<=12 || m>=1 || d>=31 || d<=1){
             //     return {
             //         error: true,
             //         statusCode: 500,
             //         message: 'invalid date',
-              
+
             //     };
 
             // }
             const start = new Date();
             start.setMonth(m - 1, d);
             start.setUTCHours(0, 0, 0, 0)
-    
+
             const Expense = await this.model.find({
                 categoryid: '62454dcb07d4b0573bc6d53f',
-                userid,date: start 
+                userid, date: start
             });
             // catid table :- income id enter
             const Income = await this.model.find({
                 categoryid: '62454a54b1a6bad90db0eed5',
-                userid,date: start 
+                userid, date: start
             });
-
-            let income = 0;
             let expence = 0;
+            let income = 0;
             for (var i = 0; i < Expense.length; i++) {
                 income += Expense[i].price;
             }
@@ -222,7 +305,6 @@ class IEDataService extends Service {
             // for (let i = 0; i < data.length; i++) {
             //     total += data[i].price;
             // }
-            
             return {
                 error: false,
                 statusCode: 202,

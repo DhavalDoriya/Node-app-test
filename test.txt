@@ -2,3 +2,34 @@ https://www.getpostman.com/collections/86d77205a79cf456cc78
 
 
 
+
+
+
+   let final = [];
+            for (let i = 0; i <= 11; i++) {
+                let days = new Date(year, i, 0).getDate()
+                const start = new Date()
+                start.setMonth(i - 1, 1);
+                start.setUTCHours(0, 0, 0)
+                const end = new Date()
+                end.setMonth(i - 1, days);
+                end.setUTCHours(0, 0, 0)
+                const data = await this.model.aggregate([
+                    { $match: { date: { $gte: start, $lt: end } } },
+                    {
+                        $group: {
+                            _id: { year: { $year: "$year" }, month: { $month: "$month" } },
+                            // title: { $first: '$title' },
+                            // price: { $first: '$price' },
+                            status: { $first: '$status' },
+                            TransactionTotal: { $sum: 1 },
+                        },
+                    },
+                ]);
+                final.push(...data);
+            }
+            console.log(final)
+
+
+
+

@@ -23,6 +23,8 @@ class IEDataController extends Controller {
 
     this.fliter = this.fliter.bind(this);
     this.searchDate = this.searchDate.bind(this);
+    this.fliteryear = this.fliteryear.bind(this);
+
   }
 
   async insertIEData(req, res) {
@@ -37,6 +39,13 @@ class IEDataController extends Controller {
   async fliter(req, res) {
     var date = req.params.month
     const response = await this.service.fliter(date);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(response.statusCode).send(response);
+  }
+
+  async fliteryear(req, res) {
+    var data = req.params.year
+    const response = await this.service.fliteryear(data);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(response.statusCode).send(response);
   }
