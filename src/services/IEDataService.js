@@ -78,21 +78,16 @@ class IEDataService extends Service {
                 ]);
                 final.push(...data);
             }
-            console.log(final)
-            
-            /////ffff
-
-
-            //tesss code
+            // console.log(final)
+            //test code
             var arrDays = [];
             var arrPrice = [];
-
             for (let price of final) {
                 arrDays.push(price._id);
                 arrPrice.push(price.TransactionTotal);
             }
-            console.log(arrDays);
-            console.log(arrPrice);
+            // console.log(arrDays);
+            // console.log(arrPrice);
             let arr = [];
             var dayWiseData = [];
             for (let i = 0; i < 12; i++) {
@@ -100,10 +95,9 @@ class IEDataService extends Service {
                 if (month < 10) {
                     month = `0${month}`
                 }
-                var strDate = `2022-${month}`
+                var strDate = `${year}-${month}`
                 // console.log(String(strDate))
                 // console.log(arrDays.indexOf(strDate));
-
                 if (arrDays.indexOf(strDate) > -1) {
                     var index = arrDays.indexOf(strDate);
                     var dayPrice = arrPrice[index]
@@ -111,22 +105,10 @@ class IEDataService extends Service {
                 } else {
                     dayWiseData.push(0);
                 }
-                // console.log(arr)
-                // data.push(obj)
-                // data.push(obj)
-
-
-                // console.log(obj)
-                // }
-
-
-
             }
             // fulaji
             // console.log(dayWiseData);
-
-
-            //generate blcnk data
+            //generate blank data
             let empty = [];
             for (let i = 1; i <= 12; i++) {
                 // let days = new Date(year, i, 0).getDate()
@@ -140,266 +122,201 @@ class IEDataService extends Service {
                 let date = `${start.getFullYear()}-${i} `
                 let obj = {
                     _id: date,
-                    TransactionTotal: 0,
+                    TransactionTotal: dayWiseData[i - 1],
                 }
-                // console.log(obj)
                 empty.push(obj);
             }
             // console.log(empty)
             //return
-            if (final.length == 0) {
-                return {
-                    error: false,
-                    statusCode: 200,
-                    msg: `Data Not Found Of year ${year}`,
-                    empty
-
-                };
-            } else {
-                return {
-                    error: false,
-                    statusCode: 200,
-                    final,
-                };
-            }
-
+            return {
+                error: false,
+                statusCode: 200,
+                msg: `Data Not Found Of year ${year}`,
+                empty
+            };
         }
-           
-        
-        catch(error) {
-        console.log(error)
-        return {
-            error: true,
-            statusCode: 500,
-            message: 'Not able to get IEData',
-        };
+
+
+        catch (error) {
+            console.log(error)
+            return {
+                error: true,
+                statusCode: 500,
+                message: 'Not able to get IEData',
+            };
+        }
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
     async montlydata(date) {
-    try {
-        let month = date;
-        let days = new Date(2022, month, 0).getDate()
-        const start = new Date()
-        start.setMonth(month - 1, 1);
-        start.setUTCHours(0, 0, 0)
+        try {
+            let month = date;
+            let days = new Date(2022, month, 0).getDate()
+            const start = new Date()
+            start.setMonth(month - 1, 1);
+            start.setUTCHours(0, 0, 0)
 
-        const end = new Date()
-        end.setMonth(month - 1, days);
-        end.setUTCHours(0, 0, 0)
+            const end = new Date()
+            end.setMonth(month - 1, days);
+            end.setUTCHours(0, 0, 0)
 
-        // console.log(start);
-        // console.log(end);
-
-        const data = await this.model.aggregate([
-            { $match: { date: { $gte: start, $lt: end } } },
-            {
-                $group: {
-                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
-                    title: { $first: '$title' },
-                    price: { $first: '$price' },
-                    type: { $first: '$type' },
-                    total: { $sum: 1 }
+            // console.log(start);
+            // console.log(end);
+            const data = await this.model.aggregate([
+                { $match: { date: { $gte: start, $lt: end } } },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
+                        // title: { $first: '$title' },
+                        price: { $first: '$price' },
+                        // type: { $first: '$type' },
+                        total: { $sum: 1 }
+                    },
                 },
-            },
-        ]);
+            ]);
+            // console.log(data)
+            //fulajii code
+            var arrDays = [];
+            var arrPrice = [];
+            var arrTotal = [];
 
-        //generate empty data
-        let abc = [];
-        for (let i = 1; i < days + 1; i++) {
-            let test = new Date();
-            test.setMonth(month - 1, i);
-            // console.log(test);
-            let obj = {
-                _id: test.toLocaleDateString("fr-CA"),
-                price: 0,
-                status: "---"
+            for (let price of data) {
+                arrDays.push(price._id);
+                arrPrice.push(price.price);
+                arrTotal.push(price.total);
+              
             }
-            data.push(obj);
+            // console.log(arrDays);
+            // console.log(arrPrice);
+            ///cc
+            var dayWiseData = [];
+            var dayTotalData = [];
+            if (month < 10) {
+                month = `0${month}`
+            }
+            for (let i = 0; i < days; i++) {
+                var day = i + 1;
+                if (day < 10) {
+                    day = `0${day}`
+                }
+                var strDate = `2022-${month}-${day}`
+                // console.log(String(strDate))
+                // console.log(arrDays.indexOf(strDate));
+                if (arrDays.indexOf(strDate) > -1) {
+                    var index = arrDays.indexOf(strDate);
+                    var dayPrice = arrPrice[index]
+                    var dayTotal = arrTotal[index]
+                    dayWiseData.push(dayPrice);
+                    dayTotalData.push(dayTotal);
+                } else {
+                    dayTotalData.push(0)
+                    dayWiseData.push(0);
+                }
+            }
+            // console.log(dayWiseData);
+            // console.log(dayTotalData)
+
+            //generate empty data
+            let finaldata = [];
+            if (month < 10) {
+                month = `0${month}`
+            }
+            for (let i = 0; i < days; i++) {
+                var day = i + 1;
+                if (day < 10) {
+                    day = `0${day}`
+                }
+                var strDate = `2022-${month}-${day}`
+                // console.log(String(strDate))
+                let obj = {
+                    _id: strDate,
+                    TotalAmout: dayWiseData[i],
+                    TotalTranctions: dayTotalData[i]
+                }
+                finaldata.push(obj);
+            }
+            // console.log(finaldata)
+            return {
+                error: false,
+                statusCode: 200,
+                finaldata,
+            };
+
         }
-
-
-
-        //fulajii code
-        // var abc = [];
-        // var arrDays = [];
-        // var arrPrice = [];
-        // for (let price of data) {
-        //     arrDays.push(price._id);
-        //     arrPrice.push(price.price);
-        // }
-        // console.log(arrDays);
-        // console.log(arrPrice);
-        // let arr = [];
-        // if (month < 10) {
-        //     month = `0${month}`
-        // }
-        // var dayWiseData = [];
-        // for (let i = 0; i < days; i++) {
-        //     var day = i + 1;
-        //     if (day < 10) {
-        //         day = `0${day}`
-        //     }
-        //     var strDate = `2022-${month}-${day}`;
-
-        //     if (arrDays.indexOf(strDate) > -1) {
-        //         var index = arrDays.indexOf(strDate);
-        //         var dayPrice = arrPrice[index]
-        //         abc[index].price = dayPrice
-        //         console.log(dayPrice)
-        //     } else {
-        //         // dayWiseData.push(0);
-        //         abc[index].price = 0
-        //         // console.log(abc[index].price = 0)
-        //     }
-
-        //     if (arrDays.indexOf(strDate) > -1) {
-        //         var index = arrDays.indexOf(strDate);
-        //         var dayPrice = arrPrice[index]
-        //         dayWiseData.push(dayPrice);
-        //     } else {
-        //         dayWiseData.push(0);
-        //     }
-        //     data.push(obj)
-        //     console.log(obj)
-        //     }
-        // }
-        // // console.log(abc)
-        // // console.log(dayWiseData[0]);
-
-        // console.log(obj._id)
-        // for (let n = 0; n < days; n++) {
-        //     // console.log(data[n]._id)
-        //     if (data[n]._id !== obj._id) {
-        //         // data.push(arr[j])
-        //         console.log('first')
-        //     }
-        // }
-        // console.log(arr)  
-        // console.log(arr)
-        // for (let j = 0; j < arr.length; j++) {
-        //     for (let n = 0; n < data.length; n++) {
-        //         // console.log(data[n]._id, arr[j]._id)
-        //         console.log(data[j])
-        //         // if (!data[n]._id == arr[j]._id) {
-        //         // data.push(arr[j])
-        //         arr.replace(data[j])
-        //         console.log('first')
-        //         // }
-        //     }
-        // }
-        // if (data.length == 0) {
-        //     return {
-        //         error: false,
-        //         statusCode: 200,
-        //         msg: `Data Not Found Of month ${month}`,
-        //         abc
-
-        //     };
-        // } else {
-        //     return {
-        //         error: false,
-        //         statusCode: 200,
-        //         data,
-        //     };
-        // }
+        catch (err) {
+            console.log(err)
+            return {
+                error: true,
+                statusCode: 500,
+                message: 'Not able to get IEData',
+                errors: err,
+            };
+        }
     }
-    catch (err) {
-        console.log(err)
-        return {
-            error: true,
-            statusCode: 500,
-            message: 'Not able to get IEData',
-            errors: err,
-        };
-    }
-}
 
 
 
 
 
     async searchDate(userid, m, d) {
-    try {
-        // if(m<=12 || m>=1 || d>=31 || d<=1){
-        //     return {
-        //         error: true,
-        //         statusCode: 500,
-        //         message: 'invalid date',
+        try {
+            // if(m<=12 || m>=1 || d>=31 || d<=1){
+            //     return {
+            //         error: true,
+            //         statusCode: 500,
+            //         message: 'invalid date',
 
-        //     };
+            //     };
 
-        // }
-        const start = new Date();
-        start.setMonth(m - 1, d);
-        start.setUTCHours(0, 0, 0, 0)
+            // }
+            const start = new Date();
+            start.setMonth(m - 1, d);
+            start.setUTCHours(0, 0, 0, 0)
 
-        const Expense = await this.model.find({
-            categoryid: '62454dcb07d4b0573bc6d53f',
-            userid, date: start
-        });
-        // catid table :- income id enter
-        const Income = await this.model.find({
-            categoryid: '62454a54b1a6bad90db0eed5',
-            userid, date: start
-        });
-        let expence = 0;
-        let income = 0;
-        for (var i = 0; i < Expense.length; i++) {
-            income += Expense[i].price;
+            const Expense = await this.model.find({
+                categoryid: '62454dcb07d4b0573bc6d53f',
+                userid, date: start
+            });
+            // catid table :- income id enter
+            const Income = await this.model.find({
+                categoryid: '62454a54b1a6bad90db0eed5',
+                userid, date: start
+            });
+            let expence = 0;
+            let income = 0;
+            for (var i = 0; i < Expense.length; i++) {
+                income += Expense[i].price;
+            }
+            for (var i = 0; i < Income.length; i++) {
+                expence += Income[i].price;
+            }
+
+
+            const data = await this.model.find({ date: start });
+            // let total = 0;
+            // for (let i = 0; i < data.length; i++) {
+            //     total += data[i].price;
+            // }
+            return {
+                error: false,
+                statusCode: 202,
+                TotalIncome: income,
+                TotalExpense: expence,
+                Difference: expence - income,
+                TotalIncomeExpensePerDay: data,
+
+            };
+        } catch (err) {
+            // console.log(err)
+            return {
+                error: true,
+                statusCode: 500,
+                message: 'Not User Found',
+                errors: err,
+            };
         }
-        for (var i = 0; i < Income.length; i++) {
-            expence += Income[i].price;
-        }
-
-
-        const data = await this.model.find({ date: start });
-        // let total = 0;
-        // for (let i = 0; i < data.length; i++) {
-        //     total += data[i].price;
-        // }
-        return {
-            error: false,
-            statusCode: 202,
-            TotalIncome: income,
-            TotalExpense: expence,
-            Difference: expence - income,
-            TotalIncomeExpensePerDay: data,
-
-        };
-    } catch (err) {
-        // console.log(err)
-        return {
-            error: true,
-            statusCode: 500,
-            message: 'Not User Found',
-            errors: err,
-        };
     }
-}
 
 
 
@@ -409,76 +326,104 @@ class IEDataService extends Service {
 
     //update IEData by id and userid(jwt)
     async updateIEData(IEDataid, data, userid) {
-    try {
-        let tempuser = await this.model.findOne({ "userid": userid })
-        if (tempuser) {
-            const updatedIEData = await this.model.updateOne({ _id: IEDataid }, data);
-            return {
-                error: false,
-                deleted: true,
-                statusCode: 200,
-                message: 'IEData update successfullly!',
-                data: updatedIEData
-            };
-        } else {
+        try {
+            let tempuser = await this.model.findOne({ "userid": userid })
+            if (tempuser) {
+                const updatedIEData = await this.model.updateOne({ _id: IEDataid }, data);
+                return {
+                    error: false,
+                    deleted: true,
+                    statusCode: 200,
+                    message: 'IEData update successfullly!',
+                    data: updatedIEData
+                };
+            } else {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: 'IEData not found',
+                };
+            }
+        } catch (err) {
+            console.log(err)
             return {
                 error: true,
-                statusCode: 404,
+                statusCode: 500,
                 message: 'IEData not found',
+                errors: err,
             };
         }
-    } catch (err) {
-        console.log(err)
-        return {
-            error: true,
-            statusCode: 500,
-            message: 'IEData not found',
-            errors: err,
-        };
     }
-}
 
     //delete IEData by id and userid(jwt)
     async deleteIEData(IEDataid, userid) {
-    try {
-        let tempuser = await this.model.find({ "userid": userid })
-        let IEData = await this.model.findByIdAndDelete(IEDataid)
-        if (IEData) {
-            return {
-                error: false,
-                deleted: true,
-                statusCode: 200,
-                message: 'IEData delete successfullly!',
-                data: IEData
-            };
-        } else {
+        try {
+            let tempuser = await this.model.find({ "userid": userid })
+            let IEData = await this.model.findByIdAndDelete(IEDataid)
+            if (IEData) {
+                return {
+                    error: false,
+                    deleted: true,
+                    statusCode: 200,
+                    message: 'IEData delete successfullly!',
+                    data: IEData
+                };
+            } else {
+                return {
+                    error: true,
+                    statusCode: 404,
+                    message: 'IEData not found',
+                };
+            }
+        } catch (err) {
+            console.log(err)
             return {
                 error: true,
-                statusCode: 404,
-                message: 'IEData not found',
+                statusCode: 500,
+                message: 'Error 500',
+                errors: err,
             };
         }
-    } catch (err) {
-        console.log(err)
-        return {
-            error: true,
-            statusCode: 500,
-            message: 'Error 500',
-            errors: err,
-        };
     }
-}
 
     //get all IEData of user dhaval IEDatas
     async getIEData(IEDataid, userid) {
-    let tempuser = await this.model.findOne({ "userid": userid })
-    if (tempuser) {
+        let tempuser = await this.model.findOne({ "userid": userid })
+        if (tempuser) {
+            try {
+                console.log(IEDataid)
+                let IEDatadata = await this.model.findById(IEDataid)
+                return {
+                    error: false,
+                    statusCode: 202,
+                    data: IEDatadata,
+                };
+            } catch (err) {
+                console.log(err)
+                return {
+                    error: true,
+                    statusCode: 500,
+                    message: 'Not able to get IEData',
+                    errors: err,
+                };
+            }
+        } else {
+            return {
+                error: true,
+                statusCode: 500,
+                message: 'Not able to get IEData'
+            }
+        }
+    }
+
+    //get all IEDatas
+    async getAllIEData(userid) {
         try {
-            console.log(IEDataid)
-            let IEDatadata = await this.model.findById(IEDataid)
+            let IEDatadata = await this.model.find({ userid: userid })
             return {
                 error: false,
                 statusCode: 202,
+                // totalIEData: IEDatadata.length,
                 data: IEDatadata,
             };
         } catch (err) {
@@ -490,63 +435,35 @@ class IEDataService extends Service {
                 errors: err,
             };
         }
-    } else {
-        return {
-            error: true,
-            statusCode: 500,
-            message: 'Not able to get IEData'
-        }
     }
-}
-
-    //get all IEDatas
-    async getAllIEData(userid) {
-    try {
-        let IEDatadata = await this.model.find({ userid: userid })
-        return {
-            error: false,
-            statusCode: 202,
-            // totalIEData: IEDatadata.length,
-            data: IEDatadata,
-        };
-    } catch (err) {
-        console.log(err)
-        return {
-            error: true,
-            statusCode: 500,
-            message: 'Not able to get IEData',
-            errors: err,
-        };
-    }
-}
 
     //get all IEDatas by cat id
     async getIEDatabycatid(user, category) {
-    try {
-        let IEDatas = await this.model.find({ userid: user, categoryid: category })
+        try {
+            let IEDatas = await this.model.find({ userid: user, categoryid: category })
 
-        let num = 0;
-        for (var i = 0; i < IEDatas.length; i++) {
-            num += IEDatas[i].price;
+            let num = 0;
+            for (var i = 0; i < IEDatas.length; i++) {
+                num += IEDatas[i].price;
+            }
+
+            return {
+                error: false,
+                statusCode: 202,
+                totalIEData: IEDatas.length,
+                totalprice: num,
+                data: IEDatas,
+            };
+        } catch (error) {
+            console.log(error)
+            return {
+                error: true,
+                statusCode: 404,
+                msg: "category not found",
+                data: error,
+            };
         }
-
-        return {
-            error: false,
-            statusCode: 202,
-            totalIEData: IEDatas.length,
-            totalprice: num,
-            data: IEDatas,
-        };
-    } catch (error) {
-        console.log(error)
-        return {
-            error: true,
-            statusCode: 404,
-            msg: "category not found",
-            data: error,
-        };
     }
-}
 }
 
 export default IEDataService;
