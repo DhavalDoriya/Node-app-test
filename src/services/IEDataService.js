@@ -15,8 +15,9 @@ class IEDataService extends Service {
         this.deleteIEData = this.deleteIEData.bind(this);
         this.getIEData = this.getIEData.bind(this);
         this.getAllIEData = this.getAllIEData.bind(this);
-        this.montlydata = this.montlydata.bind(this);
 
+
+        this.montlydata = this.montlydata.bind(this);
         this.fliteryear = this.fliteryear.bind(this);
 
 
@@ -220,7 +221,7 @@ class IEDataService extends Service {
             //generate empty data
             let finaldata = [];
             if (month < 10) {
-                month = `0${month}`
+                month = `${month}`
             }
             for (let i = 0; i < days; i++) {
                 var day = i + 1;
@@ -228,7 +229,7 @@ class IEDataService extends Service {
                     day = `0${day}`
                 }
                 var strDate = `2022-${month}-${day}`
-                // console.log(String(strDate))
+                console.log(String(strDate))
                 let obj = {
                     _id: strDate,
                     TotalAmout: dayWiseData[i],
